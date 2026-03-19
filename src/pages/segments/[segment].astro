@@ -1,0 +1,85 @@
+---
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import TechnologyCard from '../../components/TechnologyCard.astro';
+import { RINGS, RING_LABELS } from '../../lib/radar';
+import config from 'virtual:techradar/config';
+import type { GetStaticPaths } from 'astro';
+
+const siteBase = import.meta.env.BASE_URL.replace(/\/+$/, '');
+const base = `${siteBase}${config.basePath}/`;
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const segmentEntries = await getCollection('segments');
+  return segmentEntries.map((entry) => {
+    const slug = entry.id.replace(/\/index$/, '').replace(/^index$/, entry.id);
+    return {
+      params: { segment: slug },
+      props: { entry },
+    };
+  });
+};
+
+const { entry } = Astro.props as { entry: CollectionEntry<'segments'> };
+const segmentSlug = Astro.params.segment;
+
+const { Content } = await render(entry);
+
+const technologyEntries = await getCollection('technologies');
+const segTechnologies = technologyEntries
+  .filter((t) => t.id.startsWith(`${segmentSlug}/`))
+  .map((t) => ({
+    title: t.data.title,
+    ring: t.data.ring,
+    moved: t.data.moved,
+    href: `${base}technology/${t.id}/`,
+  }));
+---
+
+<Base title={`${entry.data.title} — Tech Radar`}>
+  <nav class="mb-6 text-sm" style="color: var(--radar-text-faint);">
+    <a href={base} class="breadcrumb-link">Tech Radar</a>
+    <span class="mx-2">/</span>
+    <span style="color: var(--radar-text-secondary);">{entry.data.title}</span>
+  </nav>
+
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold flex items-center gap-3" style="color: var(--radar-text);">
+      <span class="inline-block h-4 w-4 rounded-full" style={`background-color: ${entry.data.color}`}></span>
+      {entry.data.title}
+    </h1>
+    <div class="prose mt-4 max-w-none">
+      <Content />
+    </div>
+  </div>
+
+  {RINGS.map((ring) => {
+    const ringTechs = segTechnologies.filter((t) => t.ring === ring);
+    if (ringTechs.length === 0) return null;
+    return (
+      <section class="mb-6">
+        <h2 class="mb-3 text-lg font-semibold" style="color: var(--radar-text-secondary);">{RING_LABELS[ring]}</h2>
+        <div class="grid gap-2 sm:grid-cols-2">
+          {ringTechs.map((tech) => (
+            <TechnologyCard
+              title={tech.title}
+              ring={tech.ring}
+              moved={tech.moved}
+              href={tech.href}
+            />
+          ))}
+        </div>
+      </section>
+    );
+  })}
+</Base>
+
+<style>
+  .breadcrumb-link {
+    color: var(--radar-text-faint);
+    transition: color 0.15s;
+  }
+  .breadcrumb-link:hover {
+    color: var(--radar-text-secondary);
+  }
+</style>

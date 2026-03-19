@@ -1,0 +1,36 @@
+---
+import Base from '../layouts/Base.astro';
+import config from 'virtual:techradar/config';
+
+const siteBase = import.meta.env.BASE_URL.replace(/\/+$/, '');
+const base = `${siteBase}${config.basePath}/`;
+---
+
+<Base title="Page Not Found — Tech Radar" description="The page you're looking for doesn't exist.">
+  <div class="flex flex-col items-center justify-center py-20 text-center">
+    <h1 class="text-6xl font-bold" style="color: var(--radar-text);">404</h1>
+    <p class="mt-4 text-lg" style="color: var(--radar-text-muted);">
+      The page you're looking for doesn't exist.
+    </p>
+    <a href={base} class="back-link mt-8">
+      Back to Tech Radar
+    </a>
+  </div>
+</Base>
+
+<style>
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.625rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    background-color: var(--radar-active-bg);
+    color: var(--radar-active-text);
+    text-decoration: none;
+    transition: opacity 0.15s;
+  }
+  .back-link:hover {
+    opacity: 0.9;
+  }
+</style>

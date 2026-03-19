@@ -1,0 +1,49 @@
+---
+interface Props {
+  ring: 'adopt' | 'trial' | 'assess' | 'hold';
+}
+
+const { ring } = Astro.props;
+
+const labels: Record<string, string> = {
+  adopt: 'Adopt',
+  trial: 'Trial',
+  assess: 'Assess',
+  hold: 'Hold',
+};
+---
+
+<span class={`ring-badge ring-${ring}`}>
+  {labels[ring]}
+</span>
+
+<style>
+  .ring-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    border: 1px solid;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+  .ring-adopt {
+    background-color: var(--radar-ring-adopt-bg);
+    color: var(--radar-ring-adopt);
+    border-color: var(--radar-ring-adopt-border);
+  }
+  .ring-trial {
+    background-color: var(--radar-ring-trial-bg);
+    color: var(--radar-ring-trial);
+    border-color: var(--radar-ring-trial-border);
+  }
+  .ring-assess {
+    background-color: var(--radar-ring-assess-bg);
+    color: var(--radar-ring-assess);
+    border-color: var(--radar-ring-assess-border);
+  }
+  .ring-hold {
+    background-color: var(--radar-ring-hold-bg);
+    color: var(--radar-ring-hold);
+    border-color: var(--radar-ring-hold-border);
+  }
+</style>
