@@ -1,0 +1,46 @@
+---
+import RingBadge from './RingBadge.astro';
+import MovedIndicator from './MovedIndicator.astro';
+
+interface Props {
+  title: string;
+  ring: 'adopt' | 'trial' | 'assess' | 'hold';
+  moved: number;
+  href: string;
+}
+
+const { title, ring, moved, href } = Astro.props;
+---
+
+<a href={href} class="tech-card">
+  <span class="tech-card-title">
+    <span>{title}</span>
+    <MovedIndicator moved={moved} />
+  </span>
+  <RingBadge ring={ring} />
+</a>
+
+<style>
+  .tech-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--radar-border);
+    background-color: var(--radar-bg-secondary);
+    text-decoration: none;
+    transition: border-color 0.15s, background-color 0.15s;
+  }
+  .tech-card:hover {
+    border-color: var(--radar-border-subtle);
+    background-color: var(--radar-hover-bg);
+  }
+  .tech-card-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 500;
+    color: var(--radar-text);
+  }
+</style>

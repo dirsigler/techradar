@@ -1,0 +1,55 @@
+/* Catppuccin Mocha — dark-only theme */
+:root {
+  /* Layout */
+  --radar-bg: #1e1e2e;
+  --radar-bg-secondary: #181825;
+  --radar-text: #cdd6f4;
+  --radar-text-secondary: #bac2de;
+  --radar-text-muted: #a6adc8;
+  --radar-text-faint: #9399b2;
+  --radar-border: #313244;
+  --radar-border-subtle: #45475a;
+
+  /* Interactive */
+  --radar-hover-bg: #313244;
+  --radar-link: #89b4fa;
+  --radar-active-bg: #89b4fa;
+  --radar-active-text: #11111b;
+
+  /* Radar SVG */
+  --radar-chart-center: #313244;
+  --radar-chart-mid: #181825;
+  --radar-chart-edge: #11111b;
+  --radar-chart-ring: #45475a;
+  --radar-chart-divider: #45475a;
+  --radar-chart-label: #7f849c;
+  --radar-chart-band: 205, 214, 244;
+  --radar-dot-stroke: #11111b;
+
+  /* Ring status */
+  --radar-ring-adopt: #a6e3a1;
+  --radar-ring-adopt-bg: rgba(166, 227, 161, 0.15);
+  --radar-ring-adopt-border: rgba(166, 227, 161, 0.3);
+  --radar-ring-trial: #89b4fa;
+  --radar-ring-trial-bg: rgba(137, 180, 250, 0.15);
+  --radar-ring-trial-border: rgba(137, 180, 250, 0.3);
+  --radar-ring-assess: #f9e2af;
+  --radar-ring-assess-bg: rgba(249, 226, 175, 0.15);
+  --radar-ring-assess-border: rgba(249, 226, 175, 0.3);
+  --radar-ring-hold: #f38ba8;
+  --radar-ring-hold-bg: rgba(243, 139, 168, 0.15);
+  --radar-ring-hold-border: rgba(243, 139, 168, 0.3);
+
+  /* Signals */
+  --radar-moved-in: #a6e3a1;
+  --radar-moved-out: #f38ba8;
+
+  /* Prose */
+  --radar-prose-body: #bac2de;
+  --radar-prose-headings: #cdd6f4;
+  --radar-prose-links: #89b4fa;
+  --radar-prose-bold: #cdd6f4;
+  --radar-prose-code: #cba6f7;
+  --radar-prose-quotes: #a6adc8;
+  --radar-prose-hr: #45475a;
+}

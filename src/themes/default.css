@@ -1,0 +1,171 @@
+/* Default theme — light and dark mode */
+
+/* Light mode (default) */
+:root {
+  /* Layout */
+  --radar-bg: #ffffff;
+  --radar-bg-secondary: #f8fafc;
+  --radar-text: #0f172a;
+  --radar-text-secondary: #334155;
+  --radar-text-muted: #64748b;
+  --radar-text-faint: #94a3b8;
+  --radar-border: #e2e8f0;
+  --radar-border-subtle: #cbd5e1;
+
+  /* Interactive */
+  --radar-hover-bg: #f1f5f9;
+  --radar-link: #2563eb;
+  --radar-active-bg: #2563eb;
+  --radar-active-text: #ffffff;
+
+  /* Radar SVG */
+  --radar-chart-center: #e2e8f0;
+  --radar-chart-mid: #f1f5f9;
+  --radar-chart-edge: #f8fafc;
+  --radar-chart-ring: #cbd5e1;
+  --radar-chart-divider: #cbd5e1;
+  --radar-chart-label: #64748b;
+  --radar-chart-band: 15, 23, 42;
+  --radar-dot-stroke: #ffffff;
+
+  /* Ring status */
+  --radar-ring-adopt: #16a34a;
+  --radar-ring-adopt-bg: rgba(22, 163, 74, 0.1);
+  --radar-ring-adopt-border: rgba(22, 163, 74, 0.25);
+  --radar-ring-trial: #2563eb;
+  --radar-ring-trial-bg: rgba(37, 99, 235, 0.1);
+  --radar-ring-trial-border: rgba(37, 99, 235, 0.25);
+  --radar-ring-assess: #ca8a04;
+  --radar-ring-assess-bg: rgba(202, 138, 4, 0.1);
+  --radar-ring-assess-border: rgba(202, 138, 4, 0.25);
+  --radar-ring-hold: #dc2626;
+  --radar-ring-hold-bg: rgba(220, 38, 38, 0.1);
+  --radar-ring-hold-border: rgba(220, 38, 38, 0.25);
+
+  /* Signals */
+  --radar-moved-in: #16a34a;
+  --radar-moved-out: #dc2626;
+
+  /* Prose */
+  --radar-prose-body: #334155;
+  --radar-prose-headings: #0f172a;
+  --radar-prose-links: #2563eb;
+  --radar-prose-bold: #0f172a;
+  --radar-prose-code: #7c3aed;
+  --radar-prose-quotes: #64748b;
+  --radar-prose-hr: #e2e8f0;
+}
+
+/* Dark mode — system preference OR explicit data-theme attribute */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    /* Layout */
+    --radar-bg: #0f172a;
+    --radar-bg-secondary: #1e293b;
+    --radar-text: #e2e8f0;
+    --radar-text-secondary: #cbd5e1;
+    --radar-text-muted: #94a3b8;
+    --radar-text-faint: #94a3b8;
+    --radar-border: #334155;
+    --radar-border-subtle: #475569;
+
+    /* Interactive */
+    --radar-hover-bg: #334155;
+    --radar-link: #60a5fa;
+    --radar-active-bg: #3b82f6;
+    --radar-active-text: #0f172a;
+
+    /* Radar SVG */
+    --radar-chart-center: #334155;
+    --radar-chart-mid: #1e293b;
+    --radar-chart-edge: #0f172a;
+    --radar-chart-ring: #475569;
+    --radar-chart-divider: #475569;
+    --radar-chart-label: #94a3b8;
+    --radar-chart-band: 226, 232, 240;
+    --radar-dot-stroke: #0f172a;
+
+    /* Ring status */
+    --radar-ring-adopt: #4ade80;
+    --radar-ring-adopt-bg: rgba(74, 222, 128, 0.15);
+    --radar-ring-adopt-border: rgba(74, 222, 128, 0.3);
+    --radar-ring-trial: #60a5fa;
+    --radar-ring-trial-bg: rgba(96, 165, 250, 0.15);
+    --radar-ring-trial-border: rgba(96, 165, 250, 0.3);
+    --radar-ring-assess: #facc15;
+    --radar-ring-assess-bg: rgba(250, 204, 21, 0.15);
+    --radar-ring-assess-border: rgba(250, 204, 21, 0.3);
+    --radar-ring-hold: #f87171;
+    --radar-ring-hold-bg: rgba(248, 113, 113, 0.15);
+    --radar-ring-hold-border: rgba(248, 113, 113, 0.3);
+
+    /* Signals */
+    --radar-moved-in: #4ade80;
+    --radar-moved-out: #f87171;
+
+    /* Prose */
+    --radar-prose-body: #cbd5e1;
+    --radar-prose-headings: #e2e8f0;
+    --radar-prose-links: #60a5fa;
+    --radar-prose-bold: #e2e8f0;
+    --radar-prose-code: #a78bfa;
+    --radar-prose-quotes: #94a3b8;
+    --radar-prose-hr: #475569;
+  }
+}
+
+/* Explicit dark override (user clicked toggle while system is light) */
+:root[data-theme="dark"] {
+  /* Layout */
+  --radar-bg: #0f172a;
+  --radar-bg-secondary: #1e293b;
+  --radar-text: #e2e8f0;
+  --radar-text-secondary: #cbd5e1;
+  --radar-text-muted: #94a3b8;
+  --radar-text-faint: #94a3b8;
+  --radar-border: #334155;
+  --radar-border-subtle: #475569;
+
+  /* Interactive */
+  --radar-hover-bg: #334155;
+  --radar-link: #60a5fa;
+  --radar-active-bg: #3b82f6;
+  --radar-active-text: #0f172a;
+
+  /* Radar SVG */
+  --radar-chart-center: #334155;
+  --radar-chart-mid: #1e293b;
+  --radar-chart-edge: #0f172a;
+  --radar-chart-ring: #475569;
+  --radar-chart-divider: #475569;
+  --radar-chart-label: #94a3b8;
+  --radar-chart-band: 226, 232, 240;
+  --radar-dot-stroke: #0f172a;
+
+  /* Ring status */
+  --radar-ring-adopt: #4ade80;
+  --radar-ring-adopt-bg: rgba(74, 222, 128, 0.15);
+  --radar-ring-adopt-border: rgba(74, 222, 128, 0.3);
+  --radar-ring-trial: #60a5fa;
+  --radar-ring-trial-bg: rgba(96, 165, 250, 0.15);
+  --radar-ring-trial-border: rgba(96, 165, 250, 0.3);
+  --radar-ring-assess: #facc15;
+  --radar-ring-assess-bg: rgba(250, 204, 21, 0.15);
+  --radar-ring-assess-border: rgba(250, 204, 21, 0.3);
+  --radar-ring-hold: #f87171;
+  --radar-ring-hold-bg: rgba(248, 113, 113, 0.15);
+  --radar-ring-hold-border: rgba(248, 113, 113, 0.3);
+
+  /* Signals */
+  --radar-moved-in: #4ade80;
+  --radar-moved-out: #f87171;
+
+  /* Prose */
+  --radar-prose-body: #cbd5e1;
+  --radar-prose-headings: #e2e8f0;
+  --radar-prose-links: #60a5fa;
+  --radar-prose-bold: #e2e8f0;
+  --radar-prose-code: #a78bfa;
+  --radar-prose-quotes: #94a3b8;
+  --radar-prose-hr: #475569;
+}

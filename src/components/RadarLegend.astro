@@ -1,0 +1,120 @@
+---
+import RingBadge from './RingBadge.astro';
+import MovedIndicator from './MovedIndicator.astro';
+import { RINGS } from '../lib/radar';
+
+interface Technology {
+  title: string;
+  ring: 'adopt' | 'trial' | 'assess' | 'hold';
+  moved: number;
+  href: string;
+  segment: string;
+  color: string;
+}
+
+interface Segment {
+  title: string;
+  slug: string;
+  color: string;
+}
+
+interface Props {
+  technologies: Technology[];
+  segments: Segment[];
+}
+
+const { technologies, segments } = Astro.props;
+---
+
+<div class="mt-12 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
+  {segments.map((segment) => {
+    const segTechs = technologies.filter((t) => t.segment === segment.slug);
+    return (
+      <div>
+        <h3 class="legend-heading">
+          <span class="inline-block h-3.5 w-3.5 rounded-full" style={`background-color: ${segment.color}`} />
+          {segment.title}
+        </h3>
+        <ul class="legend-grid">
+          {RINGS.map((ring) => {
+            const ringTechs = segTechs.filter((t) => t.ring === ring);
+            return ringTechs.map((tech) => (
+              <li class="contents">
+                <a
+                  href={tech.href}
+                  class="legend-row"
+                  data-segment={tech.segment}
+                  data-ring={tech.ring}
+                >
+                  <span class="legend-indicator"><MovedIndicator moved={tech.moved} /></span>
+                  <span class="legend-title">{tech.title}</span>
+                  <span class="legend-badge"><RingBadge ring={tech.ring} /></span>
+                </a>
+              </li>
+            ));
+          })}
+        </ul>
+      </div>
+    );
+  })}
+</div>
+
+<style>
+  .legend-heading {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--radar-border);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--radar-text-secondary);
+    white-space: nowrap;
+  }
+
+  .legend-grid {
+    display: grid;
+    grid-template-columns: 1.25rem 1fr auto;
+    column-gap: 0.75rem;
+    row-gap: 0.375rem;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .legend-row {
+    display: grid;
+    grid-template-columns: subgrid;
+    grid-column: 1 / -1;
+    align-items: center;
+    column-gap: 0.75rem;
+    padding: 0.375rem 0.625rem;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    color: var(--radar-text-muted);
+    text-decoration: none;
+    transition: background-color 0.15s, color 0.15s, opacity 0.3s ease;
+  }
+
+  .legend-row:hover {
+    background-color: var(--radar-hover-bg);
+    color: var(--radar-text);
+  }
+
+  .legend-indicator {
+    display: flex;
+    justify-content: center;
+    width: 1.25rem;
+  }
+
+  .legend-title {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .legend-badge {
+    justify-self: end;
+  }
+</style>

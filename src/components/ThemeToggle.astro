@@ -1,0 +1,115 @@
+---
+// Theme toggle — sun/moon button that cycles: system → light → dark → system
+---
+
+<button
+  id="theme-toggle"
+  type="button"
+  class="theme-toggle"
+  title="Toggle theme"
+  aria-label="Toggle theme"
+>
+  <!-- Sun icon (shown in dark mode) -->
+  <svg class="theme-icon sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="5" />
+    <line x1="12" y1="1" x2="12" y2="3" />
+    <line x1="12" y1="21" x2="12" y2="23" />
+    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+    <line x1="1" y1="12" x2="3" y2="12" />
+    <line x1="21" y1="12" x2="23" y2="12" />
+    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+  </svg>
+  <!-- Moon icon (shown in light mode) -->
+  <svg class="theme-icon moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+  </svg>
+</button>
+
+<script>
+  const toggle = document.getElementById('theme-toggle');
+
+  function getEffectiveTheme(): 'light' | 'dark' {
+    const stored = localStorage.getItem('theme');
+    if (stored === 'light' || stored === 'dark') return stored;
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+
+  function applyTheme() {
+    const stored = localStorage.getItem('theme');
+    if (stored === 'light' || stored === 'dark') {
+      document.documentElement.setAttribute('data-theme', stored);
+    } else {
+      document.documentElement.removeAttribute('data-theme');
+    }
+    updateIcon();
+  }
+
+  function updateIcon() {
+    const effective = getEffectiveTheme();
+    document.documentElement.classList.toggle('is-dark', effective === 'dark');
+  }
+
+  toggle?.addEventListener('click', () => {
+    const current = localStorage.getItem('theme');
+    const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    let next: string | null;
+    if (!current) {
+      // system → explicit opposite
+      next = systemDark ? 'light' : 'dark';
+    } else {
+      // explicit → back to system
+      next = null;
+    }
+
+    if (next) {
+      localStorage.setItem('theme', next);
+    } else {
+      localStorage.removeItem('theme');
+    }
+    applyTheme();
+  });
+
+  // Listen for system preference changes
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+    if (!localStorage.getItem('theme')) {
+      updateIcon();
+    }
+  });
+
+  // Initial apply
+  applyTheme();
+</script>
+
+<style>
+  .theme-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--radar-border);
+    background: transparent;
+    color: var(--radar-text-muted);
+    cursor: pointer;
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .theme-toggle:hover {
+    color: var(--radar-text);
+    border-color: var(--radar-border-subtle);
+  }
+
+  .theme-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  /* Show moon by default (light mode), sun when dark */
+  .sun { display: none; }
+  .moon { display: block; }
+
+  :global(.is-dark) .sun { display: block; }
+  :global(.is-dark) .moon { display: none; }
+</style>

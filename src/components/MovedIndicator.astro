@@ -1,0 +1,10 @@
+---
+interface Props {
+  moved: number;
+}
+
+const { moved } = Astro.props;
+---
+
+{moved === 1 && <span style="color: var(--radar-moved-in);" title="Moved in">&#9650;</span>}
+{moved === -1 && <span style="color: var(--radar-moved-out);" title="Moved out">&#9660;</span>}
