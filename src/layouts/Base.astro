@@ -1,0 +1,148 @@
+---
+import config from 'virtual:techradar/config';
+import themeCSS from 'virtual:techradar/theme';
+import ThemeToggle from '../components/ThemeToggle.astro';
+import { Icon } from 'astro-icon/components';
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { title = config.title, description = 'Technology Radar — tracking technology adoption across our organization' } = Astro.props;
+const siteBase = import.meta.env.BASE_URL.replace(/\/+$/, '');
+const base = `${siteBase}${config.basePath}/`;
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalUrl} />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <title>{title}</title>
+    <style set:html={themeCSS}></style>
+    <script is:inline define:vars={{ toggle: config.color.toggle, colorMode: config.color.mode }}>
+      // Prevent flash of wrong theme — runs before paint
+      (function() {
+        if (!toggle && colorMode !== 'system') {
+          // Locked mode — ignore localStorage, force the configured mode
+          document.documentElement.setAttribute('data-theme', colorMode);
+          if (colorMode === 'dark') document.documentElement.classList.add('is-dark');
+          return;
+        }
+        var t = localStorage.getItem('theme');
+        if (t === 'light' || t === 'dark') {
+          document.documentElement.setAttribute('data-theme', t);
+        }
+        var isDark = t === 'dark' || (!t && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        if (isDark) document.documentElement.classList.add('is-dark');
+      })();
+    </script>
+  </head>
+  <body class="flex min-h-screen flex-col">
+    <header style="border-bottom: 1px solid var(--radar-border);">
+      <nav class="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
+        <a href={base} class="nav-link flex items-center gap-3 text-xl font-bold tracking-tight">
+          {config.logo && (
+            <img
+              src={config.logo.startsWith('https://') ? config.logo : `${base}${config.logo.replace(/^\//, '')}`}
+              alt={config.title}
+              class="h-8 w-auto"
+            />
+          )}
+          {config.title}
+        </a>
+        {config.color.toggle && <ThemeToggle />}
+      </nav>
+    </header>
+
+    <main class="mx-auto max-w-6xl px-6 py-10 w-full">
+      <slot />
+    </main>
+
+    <footer class="footer mt-auto" style="border-top: 1px solid var(--radar-border);">
+      <div class="mx-auto max-w-6xl px-6 py-6">
+        <div class="flex flex-col items-center gap-3 sm:flex-row sm:justify-between">
+          <span class="footer-text">
+            &copy; <a href="https://github.com/dirsigler/techradar" target="_blank" rel="noopener noreferrer" class="footer-link">Dennis Irsigler</a>
+            &nbsp;&middot;&nbsp;
+            <a href="https://github.com/dirsigler/techradar/blob/main/LICENSE" target="_blank" rel="noopener noreferrer" class="footer-link">MIT License</a>
+            {config.footerText && <Fragment>&nbsp;&middot;&nbsp;<span set:html={config.footerText} /></Fragment>}
+          </span>
+
+          {config.socialLinks && config.socialLinks.length > 0 && (
+            <div class="flex items-center gap-4">
+              {config.socialLinks.map((link) => (
+                <a
+                  href={link.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="social-link"
+                  aria-label={link.label}
+                >
+                  {link.icon ? (
+                    <Icon name={`lucide:${link.icon}`} class="h-5 w-5" aria-hidden="true" />
+                  ) : (
+                    <span>{link.label}</span>
+                  )}
+                </a>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>
+
+<style>
+  .nav-link {
+    color: var(--radar-text);
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+  .nav-link:hover {
+    color: var(--radar-link);
+  }
+
+  .footer {
+    text-align: center;
+    font-size: 0.875rem;
+    color: var(--radar-text-faint);
+  }
+
+  .footer-text {
+    color: var(--radar-text-faint);
+  }
+
+  .footer-link {
+    color: var(--radar-text-faint);
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+  .footer-link:hover {
+    color: var(--radar-text-muted);
+  }
+
+  .social-link {
+    color: var(--radar-text-muted);
+    transition: color 0.15s;
+  }
+  .social-link:hover {
+    color: var(--radar-text);
+  }
+</style>

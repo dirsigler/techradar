@@ -1,0 +1,205 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Radar from '../components/Radar.astro';
+import RadarLegend from '../components/RadarLegend.astro';
+import { RINGS, RING_LABELS, RING_DESCRIPTIONS } from '../lib/radar';
+import config from 'virtual:techradar/config';
+
+const siteBase = import.meta.env.BASE_URL.replace(/\/+$/, '');
+const base = `${siteBase}${config.basePath}/`;
+
+const segmentEntries = await getCollection('segments');
+const technologyEntries = await getCollection('technologies');
+
+// Build segment data sorted by order
+const segments = segmentEntries
+  .map((entry) => ({
+    title: entry.data.title,
+    slug: entry.id.replace(/\/index$/, '').replace(/^index$/, entry.id),
+    color: entry.data.color,
+    order: entry.data.order,
+  }))
+  .sort((a, b) => a.order - b.order);
+
+// Build a lookup from segment slug to segment data
+const segmentMap = new Map(segments.map((s) => [s.slug, s]));
+
+// Build technology data with segment info
+const technologies = technologyEntries
+  .map((entry) => {
+    const parts = entry.id.split('/');
+    const segmentSlug = parts.slice(0, -1).join('/');
+    const seg = segmentMap.get(segmentSlug);
+    return {
+      title: entry.data.title,
+      ring: entry.data.ring,
+      moved: entry.data.moved,
+      slug: entry.id,
+      segment: segmentSlug,
+      color: seg?.color ?? '#6b7280',
+      order: seg?.order ?? 1,
+      href: `${base}technology/${entry.id}/`,
+    };
+  })
+  .sort((a, b) => a.title.localeCompare(b.title));
+
+const legendSegments = segments.map((s) => ({
+  title: s.title,
+  slug: s.slug,
+  color: s.color,
+}));
+
+const ringEntries = Object.entries(RING_LABELS) as [string, string][];
+---
+
+<Base title={config.title}>
+  <div class="text-center mb-10">
+    <h1 class="text-4xl font-bold" style="color: var(--radar-text);">{config.headline}</h1>
+    <p class="mt-3 text-lg" style="color: var(--radar-text-muted);">
+      An overview of the technologies, frameworks, processes, and languages we use and evaluate.
+    </p>
+  </div>
+
+  <!-- Filter bar -->
+  <div id="filter-bar" class="mb-8 flex flex-col items-center gap-3">
+    <div class="flex flex-wrap items-center justify-center gap-2">
+      <button data-filter="all" data-type="all" class="filter-btn active">All</button>
+      {segments.map((seg) => (
+        <button data-filter={seg.slug} data-type="segment" class="filter-btn">
+          <span class="inline-block h-2.5 w-2.5 rounded-full mr-1" style={`background-color: ${seg.color}`}></span>
+          {seg.title}
+        </button>
+      ))}
+    </div>
+    <div class="flex flex-wrap items-center justify-center gap-2">
+      {ringEntries.map(([key, label]) => (
+        <button data-filter={key} data-type="ring" class="filter-btn">
+          {label}
+        </button>
+      ))}
+    </div>
+  </div>
+
+  <Radar technologies={technologies} segments={segments} />
+
+  <!-- Ring descriptions -->
+  <div class="ring-descriptions">
+    {RINGS.map((ring) => (
+      <div class="ring-desc">
+        <span class="ring-desc-label">{RING_LABELS[ring]}</span>
+        <span class="ring-desc-text">{RING_DESCRIPTIONS[ring]}</span>
+      </div>
+    ))}
+  </div>
+
+  <RadarLegend technologies={technologies} segments={legendSegments} />
+</Base>
+
+<style>
+  .filter-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.375rem 0.875rem;
+    border-radius: 9999px;
+    border: 1px solid var(--radar-border-subtle);
+    background-color: transparent;
+    color: var(--radar-text-muted);
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .filter-btn:hover {
+    border-color: var(--radar-border-subtle);
+    color: var(--radar-text);
+  }
+  .filter-btn.active {
+    background-color: var(--radar-active-bg);
+    border-color: var(--radar-active-bg);
+    color: var(--radar-active-text);
+  }
+
+  .ring-descriptions {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap: 1rem;
+    margin-top: 2.5rem;
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    border: 1px solid var(--radar-border);
+    background-color: var(--radar-bg-secondary);
+  }
+  @media (min-width: 640px) {
+    .ring-descriptions {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (min-width: 1024px) {
+    .ring-descriptions {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+  .ring-desc {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  .ring-desc-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--radar-text);
+  }
+  .ring-desc-text {
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    color: var(--radar-text-muted);
+  }
+</style>
+
+<script>
+  const buttons = document.querySelectorAll<HTMLButtonElement>('.filter-btn');
+  const dots = document.querySelectorAll<SVGCircleElement>('.radar-dot');
+  const legendRows = document.querySelectorAll<HTMLElement>('.legend-row');
+
+  buttons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      // Update active state
+      buttons.forEach((b) => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      const filter = btn.dataset.filter!;
+      const type = btn.dataset.type!;
+
+      // Filter radar dots
+      dots.forEach((dot) => {
+        const link = dot.closest('a') as SVGAElement | null;
+        if (!link) return;
+
+        const segment = dot.getAttribute('data-segment') ?? '';
+        const ring = dot.getAttribute('data-ring') ?? '';
+
+        let visible = true;
+        if (type === 'segment') visible = segment === filter;
+        else if (type === 'ring') visible = ring === filter;
+
+        // Fade non-matching dots instead of hiding
+        link.style.opacity = visible ? '1' : '0.1';
+        link.style.pointerEvents = visible ? 'auto' : 'none';
+      });
+
+      // Filter legend rows
+      legendRows.forEach((row) => {
+        const segment = row.dataset.segment ?? '';
+        const ring = row.dataset.ring ?? '';
+
+        let visible = true;
+        if (type === 'segment') visible = segment === filter;
+        else if (type === 'ring') visible = ring === filter;
+
+        row.style.opacity = visible ? '1' : '0.15';
+        row.style.pointerEvents = visible ? 'auto' : 'none';
+      });
+    });
+  });
+</script>
