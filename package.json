@@ -1,0 +1,43 @@
+{
+  "name": "@dirsigler/techradar",
+  "version": "1.0.5",
+  "type": "module",
+  "description": "An interactive technology radar Astro integration — track technology adoption across your organization",
+  "license": "MIT",
+  "author": "Dennis Irsigler <dennis@irsigler.dev>",
+  "homepage": "https://github.com/dirsigler/techradar",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dirsigler/techradar.git"
+  },
+  "keywords": [
+    "astro-integration",
+    "techradar",
+    "technology-radar",
+    "radar",
+    "engineering"
+  ],
+  "exports": {
+    ".": "./index.ts",
+    "./schemas": "./schemas.ts"
+  },
+  "files": [
+    "index.ts",
+    "integration.ts",
+    "config.ts",
+    "schemas.ts",
+    "virtual.d.ts",
+    "src/**/*"
+  ],
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "peerDependencies": {
+    "astro": "^6.0.0"
+  },
+  "dependencies": {
+    "@tailwindcss/typography": "^0.5.19",
+    "@tailwindcss/vite": "^4.2.1",
+    "tailwindcss": "^4.2.1"
+  }
+}

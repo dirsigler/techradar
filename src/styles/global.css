@@ -1,0 +1,37 @@
+@import "tailwindcss";
+@source "../**/*.astro";
+@plugin "@tailwindcss/typography";
+
+body {
+  background-color: var(--radar-bg);
+  color: var(--radar-text);
+}
+
+/* Prose overrides using semantic tokens — use direct properties to beat plugin defaults */
+.prose {
+  color: var(--radar-prose-body) !important;
+}
+
+.prose :where(h1, h2, h3, h4, h5, h6) {
+  color: var(--radar-prose-headings);
+}
+
+.prose :where(a) {
+  color: var(--radar-prose-links);
+}
+
+.prose :where(strong, b) {
+  color: var(--radar-prose-bold);
+}
+
+.prose :where(code) {
+  color: var(--radar-prose-code);
+}
+
+.prose :where(blockquote) {
+  color: var(--radar-prose-quotes);
+}
+
+.prose :where(hr) {
+  border-color: var(--radar-prose-hr);
+}

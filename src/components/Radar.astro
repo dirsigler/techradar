@@ -1,0 +1,266 @@
+---
+import { RING_RADII, RING_LABELS, RINGS, quadrantAngles, positionDots } from '../lib/radar';
+
+interface Technology {
+  title: string;
+  ring: 'adopt' | 'trial' | 'assess' | 'hold';
+  moved: number;
+  slug: string;
+  segment: string;
+  color: string;
+  order: number;
+}
+
+interface Segment {
+  title: string;
+  slug: string;
+  color: string;
+  order: number;
+}
+
+interface Props {
+  technologies: Technology[];
+  segments: Segment[];
+}
+
+const { technologies, segments } = Astro.props;
+const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : import.meta.env.BASE_URL + '/';
+
+const dots = positionDots(technologies);
+
+const CENTER = 400;
+const OUTER_RADIUS = 400;
+
+const ringRadii = [100, 200, 300, 400];
+
+const quadrantLines = [
+  { x1: CENTER, y1: 0, x2: CENTER, y2: CENTER * 2 },
+  { x1: 0, y1: CENTER, x2: CENTER * 2, y2: CENTER },
+];
+
+const segmentLabels = segments.map((seg) => {
+  const angles = quadrantAngles(seg.order);
+  const midAngle = (angles.start + angles.end) / 2;
+  const labelR = OUTER_RADIUS - 30;
+  return {
+    x: CENTER + labelR * Math.cos(midAngle),
+    y: CENTER + labelR * Math.sin(midAngle),
+    title: seg.title,
+    color: seg.color,
+  };
+});
+---
+
+<div class="radar-container relative mx-auto w-full max-w-4xl">
+  <svg
+    viewBox="0 0 800 800"
+    class="w-full"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <defs>
+      <radialGradient id="radar-bg" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" style="stop-color: var(--radar-chart-center)" />
+        <stop offset="50%" style="stop-color: var(--radar-chart-mid)" />
+        <stop offset="100%" style="stop-color: var(--radar-chart-edge)" />
+      </radialGradient>
+    </defs>
+
+    <!-- Background with radial gradient -->
+    <circle cx={CENTER} cy={CENTER} r={OUTER_RADIUS} fill="url(#radar-bg)" />
+
+    <!-- Ring fill bands -->
+    {RINGS.map((_ring, i) => {
+      const { outer } = RING_RADII[_ring];
+      const opacities = [0.06, 0.04, 0.03, 0.02];
+      return (
+        <circle
+          cx={CENTER}
+          cy={CENTER}
+          r={outer}
+          style={`fill: rgba(var(--radar-chart-band), ${opacities[i]})`}
+          stroke="none"
+        />
+      );
+    }).reverse()}
+
+    <!-- Ring circles -->
+    {ringRadii.map((r) => (
+      <circle
+        cx={CENTER}
+        cy={CENTER}
+        r={r}
+        fill="none"
+        style="stroke: var(--radar-chart-ring)"
+        stroke-width="1"
+      />
+    ))}
+
+    <!-- Quadrant divider lines -->
+    {quadrantLines.map((line) => (
+      <line
+        x1={line.x1}
+        y1={line.y1}
+        x2={line.x2}
+        y2={line.y2}
+        style="stroke: var(--radar-chart-divider)"
+        stroke-width="1"
+        opacity="0.6"
+      />
+    ))}
+
+    <!-- Ring labels -->
+    {RINGS.map((ring) => {
+      const { inner, outer } = RING_RADII[ring];
+      const midR = (inner + outer) / 2;
+      return (
+        <text
+          x={CENTER + midR}
+          y={CENTER - 6}
+          style="fill: var(--radar-chart-label)"
+          font-size="14"
+          text-anchor="middle"
+          font-family="system-ui, sans-serif"
+        >
+          {RING_LABELS[ring]}
+        </text>
+      );
+    })}
+
+    <!-- Segment labels (multiline for long names) -->
+    {segmentLabels.map((label) => {
+      const words = label.title.split(' ');
+      const mid = Math.ceil(words.length / 2);
+      const lines = words.length > 1
+        ? [words.slice(0, mid).join(' '), words.slice(mid).join(' ')]
+        : [label.title];
+      const lineHeight = 20;
+      const startY = label.y - ((lines.length - 1) * lineHeight) / 2;
+      return (
+        <text
+          x={label.x}
+          y={startY}
+          fill={label.color}
+          font-size="15"
+          font-weight="700"
+          text-anchor="middle"
+          dominant-baseline="middle"
+          font-family="system-ui, sans-serif"
+        >
+          {lines.map((line, i) => (
+            <tspan x={label.x} dy={i === 0 ? 0 : lineHeight}>
+              {line}
+            </tspan>
+          ))}
+        </text>
+      );
+    })}
+
+    <!-- Technology dots -->
+    {dots.map((dot) => (
+      <a href={`${base}technology/${dot.slug}/`} class="radar-link">
+        <circle
+          cx={dot.x}
+          cy={dot.y}
+          r="9"
+          fill={dot.color}
+          style="stroke: var(--radar-dot-stroke)"
+          stroke-width="2"
+          class="radar-dot"
+          data-title={dot.title}
+          data-ring={dot.ring}
+          data-segment={dot.segment}
+        />
+        {dot.moved === 1 && (
+          <polygon
+            points={`${dot.x},${dot.y - 16} ${dot.x - 5},${dot.y - 11} ${dot.x + 5},${dot.y - 11}`}
+            style="fill: var(--radar-moved-in)"
+          />
+        )}
+        {dot.moved === -1 && (
+          <polygon
+            points={`${dot.x},${dot.y + 16} ${dot.x - 5},${dot.y + 11} ${dot.x + 5},${dot.y + 11}`}
+            style="fill: var(--radar-moved-out)"
+          />
+        )}
+      </a>
+    ))}
+  </svg>
+
+  <!-- Tooltip -->
+  <div id="radar-tooltip" class="radar-tooltip hidden"></div>
+</div>
+
+<script>
+  const svg = document.querySelector('.radar-container svg');
+  const tooltip = document.getElementById('radar-tooltip');
+  if (svg && tooltip) {
+    svg.querySelectorAll('.radar-dot').forEach((dot) => {
+      dot.addEventListener('mouseenter', (e) => {
+        const target = e.target as SVGCircleElement;
+        const title = target.getAttribute('data-title') ?? '';
+        const ring = target.getAttribute('data-ring') ?? '';
+        tooltip.textContent = `${title} (${ring})`;
+        tooltip.classList.remove('hidden');
+      });
+
+      dot.addEventListener('mousemove', (e) => {
+        const container = svg.closest('.radar-container') as HTMLElement;
+        const rect = container.getBoundingClientRect();
+        const me = e as MouseEvent;
+        tooltip.style.left = `${me.clientX - rect.left + 12}px`;
+        tooltip.style.top = `${me.clientY - rect.top - 10}px`;
+      });
+
+      dot.addEventListener('mouseleave', () => {
+        tooltip.classList.add('hidden');
+      });
+    });
+  }
+</script>
+
+<style>
+  .radar-tooltip {
+    position: absolute;
+    display: none;
+    pointer-events: none;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    background-color: var(--radar-hover-bg);
+    color: var(--radar-text);
+    border: 1px solid var(--radar-border-subtle);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  }
+  .radar-tooltip:not(.hidden) {
+    display: block;
+  }
+
+  .radar-link {
+    outline: none;
+    color: inherit;
+    text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .radar-link:visited,
+  .radar-link:link,
+  .radar-link:active {
+    color: inherit;
+  }
+  .radar-link:focus,
+  .radar-link:focus-visible {
+    outline: none;
+  }
+  .radar-link:hover .radar-dot,
+  .radar-link:focus .radar-dot {
+    r: 13;
+  }
+
+  .radar-dot {
+    cursor: pointer;
+    transition: r 0.15s ease, filter 0.15s ease;
+  }
+  .radar-dot:hover {
+    filter: brightness(1.3) drop-shadow(0 0 8px rgba(205, 214, 244, 0.4));
+  }
+</style>
