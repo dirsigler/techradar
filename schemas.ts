@@ -1,4 +1,7 @@
 import { z } from 'astro/zod';
+import { RINGS } from './src/lib/radar';
+
+const ringEnum = z.enum(RINGS);
 
 export const segmentSchema = z.object({
   title: z.string(),
@@ -8,6 +11,15 @@ export const segmentSchema = z.object({
 
 export const technologySchema = z.object({
   title: z.string(),
-  ring: z.enum(['adopt', 'trial', 'assess', 'hold']),
+  ring: ringEnum,
   moved: z.number().int().min(-1).max(1).default(0),
+  history: z
+    .array(
+      z.object({
+        date: z.string(),
+        ring: ringEnum,
+        description: z.string().optional(),
+      }),
+    )
+    .optional(),
 });

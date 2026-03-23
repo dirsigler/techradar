@@ -109,11 +109,28 @@ Each technology file:
 title: Kubernetes
 ring: adopt
 moved: 0
+history:
+  - date: "2025-03"
+    ring: adopt
+    description: "Promoted after 2 years of successful production use."
+  - date: "2023-01"
+    ring: trial
+    description: "Started evaluating for container orchestration."
+  - date: "2022-06"
+    ring: assess
 ---
 
 Your description in Markdown. Explain why this technology is in this ring
 and what your experience has been.
 ```
+
+The `history` field is optional. When present, a timeline is rendered on the technology detail page showing how its ring classification changed over time. Each entry has:
+
+| Field | Required | Description |
+| ----- | -------- | ----------- |
+| `date` | yes | Free-text date string (e.g. `"2025-03"`, `"Q1 2025"`) |
+| `ring` | yes | The ring at that point in time (`adopt`, `trial`, `assess`, `hold`) |
+| `description` | no | Short rationale for the change |
 
 ### 5. Run
 
