@@ -97,9 +97,17 @@ const { technologies, segments } = Astro.props;
     transition: background-color 0.15s, color 0.15s, opacity 0.3s ease;
   }
 
-  .legend-row:hover {
+  .legend-row:hover,
+  .legend-row:focus-visible {
     background-color: var(--radar-hover-bg);
     color: var(--radar-text);
+  }
+  .legend-row:focus-visible {
+    outline: 2px solid var(--radar-link);
+    outline-offset: -2px;
+  }
+  .legend-row:focus:not(:focus-visible) {
+    outline: none;
   }
 
   .legend-indicator {

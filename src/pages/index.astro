@@ -188,6 +188,8 @@ const ringEntries = Object.entries(RING_LABELS) as [string, string][];
         // Fade non-matching dots instead of hiding
         link.style.opacity = visible ? '1' : '0.1';
         link.style.pointerEvents = visible ? 'auto' : 'none';
+        // Remove filtered dots from tab order
+        link.setAttribute('tabindex', visible ? '0' : '-1');
       });
 
       // Filter legend rows
@@ -201,6 +203,8 @@ const ringEntries = Object.entries(RING_LABELS) as [string, string][];
 
         row.style.opacity = visible ? '1' : '0.15';
         row.style.pointerEvents = visible ? 'auto' : 'none';
+        // Remove filtered legend rows from tab order
+        row.setAttribute('tabindex', visible ? '0' : '-1');
       });
     });
   });
