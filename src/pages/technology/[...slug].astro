@@ -39,6 +39,21 @@ const techFileName = entry.id.split('/').pop();
 const editUrl = config.editBaseUrl
   ? `${config.editBaseUrl}/${segmentSlug}/${techFileName}.md`
   : null;
+
+const linkIconMap: Record<string, string> = {
+  docs: 'lucide:book-open',
+  repo: 'lucide:git-fork',
+  website: 'lucide:globe',
+  community: 'lucide:messages-square',
+};
+const linkOrder: Record<string, number> = { docs: 0, repo: 1, website: 2, community: 3 };
+const links = (entry.data.links ?? [])
+  .map((link: { label: string; url: string; type: string }) => ({
+    ...link,
+    icon: linkIconMap[link.type] ?? 'lucide:globe',
+    order: linkOrder[link.type] ?? 99,
+  }))
+  .sort((a, b) => a.order - b.order);
 ---
 
 <Base title={`${entry.data.title} — Tech Radar`}>
@@ -66,7 +81,7 @@ const editUrl = config.editBaseUrl
         </span>
         {entry.data.owner && (
           <span class="flex items-center gap-1.5 text-sm" style="color: var(--radar-text-muted);">
-            <Icon name="lucide:users" class="h-3.5 w-3.5" />
+            <Icon name="lucide:users-round" class="h-3.5 w-3.5" />
             {entry.data.owner.url ? (
               <a href={entry.data.owner.url} target="_blank" rel="noopener noreferrer" class="owner-link">
                 {entry.data.owner.name}
@@ -75,6 +90,22 @@ const editUrl = config.editBaseUrl
               entry.data.owner.name
             )}
           </span>
+        )}
+        {links.length > 0 && (
+          <>
+            <span class="meta-divider" />
+            {links.map((link) => (
+              <a
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="tech-link"
+              >
+                <Icon name={link.icon} class="h-3.5 w-3.5" />
+                {link.label}
+              </a>
+            ))}
+          </>
         )}
       </div>
     </header>
@@ -155,6 +186,25 @@ const editUrl = config.editBaseUrl
     transition: color 0.15s;
   }
   .owner-link:hover {
+    color: var(--radar-link);
+  }
+
+  .meta-divider {
+    width: 1px;
+    height: 1rem;
+    background-color: var(--radar-border);
+  }
+
+  .tech-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-size: 0.875rem;
+    color: var(--radar-text-muted);
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+  .tech-link:hover {
     color: var(--radar-link);
   }
 

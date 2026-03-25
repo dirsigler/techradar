@@ -28,4 +28,13 @@ export const technologySchema = z.object({
       url: z.string().url().optional(),
     })
     .optional(),
+  links: z
+    .array(
+      z.object({
+        label: z.string(),
+        url: z.string().url(),
+        type: z.enum(['docs', 'repo', 'website', 'community']).default('website'),
+      }),
+    )
+    .optional(),
 });
