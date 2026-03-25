@@ -16,11 +16,12 @@ jobs:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
           persist-credentials: false
-      - run: |
-          source ~/.nvm/nvm.sh
-          nvm use 24
-          npm ci
-          npm pack
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4 # zizmor: ignore[cache-poisoning]
+        with:
+          node-version: 24
+          cache: ""
+      - run: npm ci
+      - run: npm pack
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: npm-package
