@@ -1,6 +1,6 @@
 {
   "name": "@dirsigler/astro-techradar",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "type": "module",
   "description": "An interactive technology radar Astro integration — track technology adoption across your organization",
   "license": "MIT",

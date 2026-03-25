@@ -18,11 +18,14 @@ export interface ResolvedColorMode {
 }
 
 export interface TechRadarUserConfig {
-  /** Navbar title text */
-  title: string;
+  /** Brand name shown in the navbar. */
+  name: string;
 
-  /** Main page headline. Falls back to title if not set. */
-  headline?: string;
+  /** Main page title shown as the h1 heading. Falls back to name if not set. */
+  title?: string;
+
+  /** Subtitle shown below the title on the main page. */
+  subtitle?: string;
 
   /**
    * URL path prefix where the tech radar is mounted (e.g. "/techradar").
@@ -54,8 +57,9 @@ export interface TechRadarUserConfig {
 }
 
 export interface ResolvedConfig {
+  name: string;
   title: string;
-  headline: string;
+  subtitle?: string;
   /** Normalized base path with leading slash, no trailing slash. Empty string when mounted at root. */
   basePath: string;
   logo?: string;
@@ -76,8 +80,9 @@ function normalizeBasePath(raw?: string): string {
 
 export function resolveConfig(user: TechRadarUserConfig): ResolvedConfig {
   return {
-    title: user.title,
-    headline: user.headline ?? user.title,
+    name: user.name,
+    title: user.title ?? user.name,
+    subtitle: user.subtitle,
     basePath: normalizeBasePath(user.basePath),
     logo: user.logo,
     footerText: user.footerText ?? '',

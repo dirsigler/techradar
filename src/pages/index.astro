@@ -53,12 +53,14 @@ const legendSegments = segments.map((s) => ({
 const ringEntries = Object.entries(RING_LABELS) as [string, string][];
 ---
 
-<Base title={config.title}>
+<Base title={config.name}>
   <div class="text-center mb-10">
-    <h1 class="text-4xl font-bold" style="color: var(--radar-text);">{config.headline}</h1>
-    <p class="mt-3 text-lg" style="color: var(--radar-text-muted);">
-      An overview of the technologies, frameworks, processes, and languages we use and evaluate.
-    </p>
+    <h1 class="text-4xl font-bold" style="color: var(--radar-text);">{config.title}</h1>
+    {config.subtitle && (
+      <p class="mt-3 text-lg" style="color: var(--radar-text-muted);">
+        {config.subtitle}
+      </p>
+    )}
   </div>
 
   <!-- Filter bar -->
