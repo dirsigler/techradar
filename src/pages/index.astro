@@ -40,6 +40,7 @@ const technologies = technologyEntries
       color: seg?.color ?? '#6b7280',
       order: seg?.order ?? 1,
       href: `${base}technology/${entry.id}/`,
+      tags: (entry.data.tags ?? []) as string[],
     };
   })
   .sort((a, b) => a.title.localeCompare(b.title));
@@ -51,6 +52,9 @@ const legendSegments = segments.map((s) => ({
 }));
 
 const ringEntries = Object.entries(RING_LABELS) as [string, string][];
+
+// Collect all unique tags across technologies
+const allTags = [...new Set(technologies.flatMap((t) => t.tags))].sort();
 ---
 
 <Base title={config.name}>
@@ -81,6 +85,15 @@ const ringEntries = Object.entries(RING_LABELS) as [string, string][];
         </button>
       ))}
     </div>
+    {allTags.length > 0 && (
+      <div class="flex flex-wrap items-center justify-center gap-2">
+        {allTags.map((tag) => (
+          <button data-filter={tag} data-type="tag" class="filter-btn filter-btn-tag">
+            {tag}
+          </button>
+        ))}
+      </div>
+    )}
   </div>
 
   <Radar technologies={technologies} segments={segments} />
@@ -115,6 +128,9 @@ const ringEntries = Object.entries(RING_LABELS) as [string, string][];
   .filter-btn:hover {
     border-color: var(--radar-border-subtle);
     color: var(--radar-text);
+  }
+  .filter-btn-tag {
+    font-size: 0.8125rem;
   }
   .filter-btn.active {
     background-color: var(--radar-active-bg);
@@ -180,10 +196,12 @@ const ringEntries = Object.entries(RING_LABELS) as [string, string][];
 
         const segment = dot.getAttribute('data-segment') ?? '';
         const ring = dot.getAttribute('data-ring') ?? '';
+        const tags = (dot.getAttribute('data-tags') ?? '').split(',').filter(Boolean);
 
         let visible = true;
         if (type === 'segment') visible = segment === filter;
         else if (type === 'ring') visible = ring === filter;
+        else if (type === 'tag') visible = tags.includes(filter);
 
         // Fade non-matching dots instead of hiding
         link.style.opacity = visible ? '1' : '0.1';
@@ -196,10 +214,12 @@ const ringEntries = Object.entries(RING_LABELS) as [string, string][];
       legendRows.forEach((row) => {
         const segment = row.dataset.segment ?? '';
         const ring = row.dataset.ring ?? '';
+        const tags = (row.dataset.tags ?? '').split(',').filter(Boolean);
 
         let visible = true;
         if (type === 'segment') visible = segment === filter;
         else if (type === 'ring') visible = ring === filter;
+        else if (type === 'tag') visible = tags.includes(filter);
 
         row.style.opacity = visible ? '1' : '0.15';
         row.style.pointerEvents = visible ? 'auto' : 'none';
@@ -208,4 +228,13 @@ const ringEntries = Object.entries(RING_LABELS) as [string, string][];
       });
     });
   });
+
+  // Activate tag filter from URL query parameter (e.g. ?tag=cloud-native)
+  const urlTag = new URLSearchParams(window.location.search).get('tag');
+  if (urlTag) {
+    const tagBtn = Array.from(buttons).find(
+      (b) => b.dataset.type === 'tag' && b.dataset.filter === urlTag,
+    );
+    if (tagBtn) tagBtn.click();
+  }
 </script>

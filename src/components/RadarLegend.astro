@@ -10,6 +10,7 @@ interface Technology {
   href: string;
   segment: string;
   color: string;
+  tags: string[];
 }
 
 interface Segment {
@@ -45,6 +46,7 @@ const { technologies, segments } = Astro.props;
                   class="legend-row"
                   data-segment={tech.segment}
                   data-ring={tech.ring}
+                  data-tags={tech.tags.join(',')}
                 >
                   <span class="legend-indicator"><MovedIndicator moved={tech.moved} /></span>
                   <span class="legend-title">{tech.title}</span>

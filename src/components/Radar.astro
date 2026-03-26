@@ -9,6 +9,7 @@ interface Technology {
   segment: string;
   color: string;
   order: number;
+  tags: string[];
 }
 
 interface Segment {
@@ -172,6 +173,7 @@ const segmentLabels = segments.map((seg) => {
           data-title={dot.title}
           data-ring={dot.ring}
           data-segment={dot.segment}
+          data-tags={technologies.find((t) => t.slug === dot.slug)?.tags.join(',') ?? ''}
         />
         {dot.moved === 1 && (
           <polygon

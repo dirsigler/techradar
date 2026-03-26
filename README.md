@@ -30,6 +30,8 @@ An [Astro](https://astro.build) integration that adds a complete, interactive te
 - **RSS Feed** — Auto-generated feed at `{basePath}/feed.xml` for subscribers
 - **Owner Attribution** — Assign teams or individuals to technologies
 - **External Links** — Link technologies to docs, repos, communities with typed icons
+- **Tags & Filtering** — Cross-cutting tags for discovery, filterable on the main radar page
+- **Related Technologies** — Manual and auto-suggested related technologies on detail pages
 - **Keyboard Navigation** — Arrow keys to cycle radar dots, focus indicators, screen reader friendly
 
 ---
@@ -116,6 +118,12 @@ moved: 0
 owner:
   name: Platform Engineering
   url: https://github.com/orgs/example/teams/platform
+tags:
+  - cloud-native
+  - containers
+related:
+  - cloud/helm
+  - cloud/argocd
 links:
   - label: Documentation
     url: https://kubernetes.io/docs/
@@ -159,6 +167,14 @@ External resource links displayed inline on the detail page. Links are automatic
 | `label` | yes | Display text for the link |
 | `url` | yes | Full URL |
 | `type` | no | Link type — determines the icon. One of `docs`, `repo`, `website`, `community`. Defaults to `website` |
+
+#### `tags` (optional)
+
+Free-text tags for cross-cutting concerns (e.g. `cloud-native`, `security`, `iac`). Tags appear as `#tag` pills on the detail page and enable tag-based filtering on the main radar page. Clicking a tag pill navigates to the radar filtered by that tag.
+
+#### `related` (optional)
+
+A list of technology slugs (matching entry IDs like `cloud/helm`) to display as related technologies on the detail page. In addition to these manual entries, the radar automatically suggests technologies that share 2 or more tags with the current entry.
 
 #### `history` (optional)
 
@@ -224,14 +240,16 @@ socialLinks: [
 
 ### Technology Frontmatter
 
-| Field     | Type                                       | Description                                     |
-| :-------- | :----------------------------------------- | :---------------------------------------------- |
-| `title`   | `string`                                   | Display name                                    |
-| `ring`    | `'adopt' \| 'trial' \| 'assess' \| 'hold'` | Which ring the technology belongs to            |
-| `moved`   | `-1 \| 0 \| 1`                             | Movement indicator (-1 = out, 0 = none, 1 = in) |
-| `owner`   | `{ name, url? }`                           | Optional team/person responsible (see [owner](#owner-optional)) |
-| `links`   | `Array<{ label, url, type? }>`             | Optional external links (see [links](#links-optional)) |
-| `history` | `Array<{ date, ring, description? }>`      | Optional ring change timeline (see [history](#history-optional)) |
+| Field | Type | Description |
+| :-- | :-- | :-- |
+| `title` | `string` | Display name |
+| `ring` | `'adopt' \| 'trial' \| 'assess' \| 'hold'` | Which ring the technology belongs to |
+| `moved` | `-1 \| 0 \| 1` | Movement indicator (-1 = out, 0 = none, 1 = in) |
+| `owner` | `{ name, url? }` | Optional team/person responsible (see [owner](#owner-optional)) |
+| `links` | `Array<{ label, url, type? }>` | Optional external links (see [links](#links-optional)) |
+| `tags` | `string[]` | Optional free-text tags for filtering (see [tags](#tags-optional)) |
+| `related` | `string[]` | Optional technology slugs for related (see [related](#related-optional)) |
+| `history` | `Array<{ date, ring, description? }>` | Optional ring change timeline (see [history](#history-optional)) |
 
 ### Segment Frontmatter
 

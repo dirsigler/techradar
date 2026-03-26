@@ -54,6 +54,30 @@ const links = (entry.data.links ?? [])
     order: linkOrder[link.type] ?? 99,
   }))
   .sort((a, b) => a.order - b.order);
+
+const tags = (entry.data.tags ?? []) as string[];
+const manualRelatedSlugs = (entry.data.related ?? []) as string[];
+
+// Build related technologies: manual + auto (2+ shared tags)
+const allTechnologies = await getCollection('technologies');
+const manualRelated = manualRelatedSlugs
+  .map((slug) => allTechnologies.find((t) => t.id === slug))
+  .filter(Boolean);
+
+const manualIds = new Set(manualRelatedSlugs);
+manualIds.add(entry.id); // exclude self
+
+let autoRelated: typeof manualRelated = [];
+if (tags.length > 0) {
+  autoRelated = allTechnologies.filter((t) => {
+    if (manualIds.has(t.id)) return false;
+    const otherTags = (t.data.tags ?? []) as string[];
+    const shared = tags.filter((tag) => otherTags.includes(tag));
+    return shared.length >= 2;
+  });
+}
+
+const relatedTechnologies = [...manualRelated, ...autoRelated];
 ---
 
 <Base title={`${entry.data.title} — Tech Radar`}>
@@ -108,6 +132,15 @@ const links = (entry.data.links ?? [])
           </>
         )}
       </div>
+      {tags.length > 0 && (
+        <div class="mt-3 flex items-center gap-2 flex-wrap">
+          {tags.map((tag) => (
+            <a href={`${base}?tag=${encodeURIComponent(tag)}`} class="tag-pill">
+              #{tag}
+            </a>
+          ))}
+        </div>
+      )}
     </header>
 
     <div class="prose max-w-none">
@@ -137,6 +170,18 @@ const links = (entry.data.links ?? [])
           ))}
         </ol>
       </section>
+    )}
+
+    {relatedTechnologies.length > 0 && (
+      <div class="mt-8 text-sm" style="color: var(--radar-text-muted);">
+        <span class="font-medium" style="color: var(--radar-text-secondary);">Related</span>
+        {relatedTechnologies.map((tech, i) => (
+          <>
+            <span class="mx-1.5">{i > 0 ? '·' : ''}</span>
+            <a href={`${base}technology/${tech.id}/`} class="related-link">{tech.data.title}</a>
+          </>
+        ))}
+      </div>
     )}
 
     {editUrl && (
@@ -205,6 +250,30 @@ const links = (entry.data.links ?? [])
     transition: color 0.15s;
   }
   .tech-link:hover {
+    color: var(--radar-link);
+  }
+
+  .tag-pill {
+    display: inline-block;
+    padding: 0.125rem 0.5rem;
+    border-radius: 0.25rem;
+    border: 1px solid var(--radar-border-subtle);
+    font-size: 0.75rem;
+    color: var(--radar-text-muted);
+    text-decoration: none;
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .tag-pill:hover {
+    color: var(--radar-link);
+    border-color: var(--radar-link);
+  }
+
+  .related-link {
+    color: var(--radar-text-muted);
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+  .related-link:hover {
     color: var(--radar-link);
   }
 

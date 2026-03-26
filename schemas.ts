@@ -37,4 +37,6 @@ export const technologySchema = z.object({
       }),
     )
     .optional(),
+  tags: z.array(z.string()).optional(),
+  related: z.array(z.string()).optional(),
 });
