@@ -36,8 +36,8 @@ const segmentColor = segmentEntry?.data.color ?? '#6c7086';
 
 // Build "Edit on GitHub" URL from the entry's file path
 const techFileName = entry.id.split('/').pop();
-const editUrl = config.editBaseUrl
-  ? `${config.editBaseUrl}/${segmentSlug}/${techFileName}.md`
+const editUrl = config.editing.enabled && config.editing.baseUrl
+  ? `${config.editing.baseUrl}/${segmentSlug}/${techFileName}.md`
   : null;
 
 const linkIconMap: Record<string, string> = {

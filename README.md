@@ -206,12 +206,19 @@ techradar({
   // Optional
   basePath: "/techradar", // Mount under a sub-path (e.g. acme.com/techradar/)
   logo: "/logo.svg", // Path to logo in public/
-  footerText: "Built by the Platform Team", // Supports HTML
-  editBaseUrl: "https://github.com/your-org/your-radar/edit/main/segments",
+  footer: "Built by the Platform Team", // Supports HTML
+  editing: {
+    enabled: true, // Show "Edit this page" links (default: true)
+    baseUrl: "https://github.com/your-org/your-radar/edit/main/segments",
+  },
   theme: "default", // 'default' | 'catppuccin-mocha' | path to custom CSS
   color: {
     toggle: true, // Show the light/dark mode toggle (default: true)
     mode: "system", // 'light' | 'dark' | 'system' (default: 'system')
+  },
+  search: {
+    enabled: true, // Show the search input in the navbar (default: true)
+    placeholder: "Search technologies...", // Placeholder text
   },
   feed: true, // Enable RSS feed at {basePath}/feed.xml (default: true)
   socialLinks: [
